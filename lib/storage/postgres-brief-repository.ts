@@ -10,11 +10,7 @@ import type { BriefRepository, BriefWriteResult } from "./repository";
 
 /** Postgres store. Rows are inserted once; database triggers reject later edits. */
 export function createPostgresBriefRepository(connectionString: string): BriefRepository {
-  const pool = new Pool({
-    connectionString,
-    max: 3,
-    idleTimeoutMillis: 10_000,
-  });
+  const pool = new Pool(poolConfig(connectionString));
   pool.on("error", (error) => {
     console.error("Postgres pool error.", error.message);
   });
@@ -73,6 +69,32 @@ export function createPostgresBriefRepository(connectionString: string): BriefRe
       return readPayload(row.payload);
     },
   };
+}
+
+function poolConfig(connectionString: string) {
+  const cleaned = withoutChannelBinding(connectionString);
+  const hostname = new URL(cleaned).hostname;
+  const local =
+    hostname === "localhost" || hostname === "127.0.0.1" || hostname === "::1";
+  return {
+    connectionString: cleaned,
+    max: 1,
+    idleTimeoutMillis: 10_000,
+    connectionTimeoutMillis: 10_000,
+    ssl: local ? undefined : { rejectUnauthorized: false },
+  };
+}
+
+/**
+ * node-postgres does not implement libpq channel binding. Neon appends it,
+ * and leaving it on the string makes the remote handshake fail.
+ */
+function withoutChannelBinding(connectionString: string): string {
+  const query = connectionString.split("?")[1];
+  if (!query) return connectionString;
+  const base = connectionString.slice(0, connectionString.indexOf("?"));
+  const params = query.split("&").filter((part) => part.length > 0 && !part.startsWith("channel_binding="));
+  return params.length > 0 ? `${base}?${params.join("&")}` : base;
 }
 
 async function applySchema(pool: Pool): Promise<void> {

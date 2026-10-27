@@ -1,9 +1,19 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import test from "node:test";
 
-import { briefMigrationStatements } from "./schema";
+import { BRIEF_MIGRATION_SQL, briefMigrationStatements } from "./schema";
 
 test("brief versions and their evidence links are insert-only", () => {
+  const file = readFileSync(
+    path.join(process.cwd(), "db", "migrations", "001_brief_versions.sql"),
+    "utf8",
+  );
+  assert.equal(
+    BRIEF_MIGRATION_SQL.replace(/\r\n/g, "\n").trim(),
+    file.replace(/\r\n/g, "\n").trim(),
+  );
   const statements = briefMigrationStatements();
   const sql = statements.join("\n");
 
