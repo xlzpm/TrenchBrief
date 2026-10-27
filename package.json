@@ -1,0 +1,37 @@
+{
+  "name": "trench-brief",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test lib/dto/contracts.test.ts lib/providers/*.test.ts lib/analysis/*.test.ts lib/watchlist.test.ts lib/storage/*.test.ts lib/cache/*.test.ts lib/limit/*.test.ts lib/observability/*.test.ts lib/brief/*.test.ts lib/live/*.test.ts db/*.test.ts",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@t3-oss/env-nextjs": "0.13.11",
+    "next": "16.4.3",
+    "pg": "8.23.1",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "ws": "^8.22.0",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "@tailwindcss/postcss": "4.3.3",
+    "@types/node": "24.13.6",
+    "@types/pg": "8.23.1",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.3",
+    "@types/ws": "^8.18.2",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.4.3",
+    "tailwindcss": "4.3.3",
+    "tsx": "^4.19.2",
+    "typescript": "5.9.3"
+  }
+}
